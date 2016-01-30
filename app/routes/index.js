@@ -54,4 +54,28 @@ module.exports = function (app, passport) {
 		.get(isLoggedIn, clickHandler.getClicks)
 		.post(isLoggedIn, clickHandler.addClick)
 		.delete(isLoggedIn, clickHandler.resetClicks);
+		
+	app.route('/:time')
+		.get(function (req, res) {
+			var time = req.params.time;
+			var unixtime = parseInt(time);
+
+			if (isNaN(unixtime)) {
+				var date = new Date(req.params.time); // natural
+			} else {
+				var date = new Date(unixtime*1000); //unix timestamp
+			}
+			
+			if (isNaN(date.getTime())) {
+				res.json({
+					unix: null,
+					natural: null
+				});
+			} else {
+				res.json({
+					unix: (date.getTime() / 1000),
+					natural: date.toLocaleString("en-us", { month: "long" }) + " " + date.getDate() + ", " + date.getFullYear()
+				});
+			}
+		});
 };
